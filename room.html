@@ -110,20 +110,38 @@
             var sql2 = `select * from Participations where roomId = ${roomId}`
             var objects3 = await osql.connect(sql2);
             var len = objects3.length;
-            if (turn % len == order) {
-                var ans = document.getElementById('answer').value;
-                var sql = `select turn from Rooms where id = ${roomId}`
-                var objects = await osql.connect(sql);
-                var turn = Number(objects[0].turn);
+            if (len == order) {
+                if (turn % len == 0) {
+                    var ans = document.getElementById('answer').value;
+                    var sql = `select turn from Rooms where id = ${roomId}`
+                    var objects = await osql.connect(sql);
+                    var turn = Number(objects[0].turn);
 
-                var sql1 = `select * from Participations where RoomId = ${roomId}`;
-                var objects1 = await osql.connect(sql1);
-                var partId = objects1[0].id;
+                    var sql1 = `select * from Participations where RoomId = ${roomId}`;
+                    var objects1 = await osql.connect(sql1);
+                    var partId = objects1[0].id;
 
-                var sql2 = `insert into Answers (participationId, content, turn) values ('${partId}', '${ans}', ${turn})`;
-                var commentId = await osql.connectInsert(sql2);
+                    var sql2 = `insert into Answers (participationId, content, turn) values ('${partId}', '${ans}', ${turn})`;
+                    var commentId = await osql.connectInsert(sql2);
 
-                startgame();
+                    startgame();
+                }
+            } else {
+                if (turn % len == order) {
+                    var ans = document.getElementById('answer').value;
+                    var sql = `select turn from Rooms where id = ${roomId}`
+                    var objects = await osql.connect(sql);
+                    var turn = Number(objects[0].turn);
+
+                    var sql1 = `select * from Participations where RoomId = ${roomId}`;
+                    var objects1 = await osql.connect(sql1);
+                    var partId = objects1[0].id;
+
+                    var sql2 = `insert into Answers (participationId, content, turn) values ('${partId}', '${ans}', ${turn})`;
+                    var commentId = await osql.connectInsert(sql2);
+
+                    startgame();
+                }
             }
         }
 
@@ -163,15 +181,26 @@
             var sql2 = `select * from Participations where roomId = ${roomId}`
             var objects3 = await osql.connect(sql2);
             var len = objects3.length;
-            var len2 = 3;
 
             if (turn == 0) {
-            } else if (turn % len2 == order) {
-                makemyturngame();
-                outputanswer();
             } else {
-                makenotmyturngame();
-                outputanswer();
+                if (len == order) {
+                    if (turn % len == 0) {
+                        makemyturngame();
+                        outputanswer();
+                    } else {
+                        makenotmyturngame();
+                        outputanswer();
+                    }
+                } else {
+                    if (turn % len == order) {
+                        makemyturngame();
+                        outputanswer();
+                    } else {
+                        makenotmyturngame();
+                        outputanswer();
+                    }
+                }
             }
         }
 
@@ -188,16 +217,17 @@
     <hr>
     <div id="tfbutton">
         <input id="topic" type="text">
-        <button onclick="makeTopic()">new topic</button>
-        <button id="start" onclick="startgame()">start</button>
+        <button onclick="makeTopic()">お題を決める</button>
+        <button id="start" onclick="startgame()">スタート</button>
     </div>
     <br>
-    Topic
+
+    お題
     <div id="comments"></div>
     <br>
-    Member
+    メンバー
     <div id="members"></div>
-    <div id="inp"></div>
+    <input id="answer" type="text"><button onclick="inputanswer()">答える</button>
     <div id="ans"></div>
 </body>
 
